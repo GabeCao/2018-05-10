@@ -4,12 +4,22 @@ import sun.management.HotspotClassLoadingMBean;
 
 import javax.net.ssl.HostnameVerifier;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Trajectory {
 
     private Map<HotSpot,Integer> visitInfo;
+    private Date initTime;
+
+    public Date getInitTime() {
+        return initTime;
+    }
+
+    public void setInitTime(Date initTime) {
+        this.initTime = initTime;
+    }
 
     public Trajectory(ArrayList<HotSpot> hotSpots) {
         this.visitInfo = new HashMap<>();

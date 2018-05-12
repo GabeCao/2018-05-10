@@ -18,7 +18,8 @@ public class GetAllHotSpots {
             String[] data = line.split(",");
             double x = Double.parseDouble(data[0]);
             double y = Double.parseDouble(data[1]);
-            HotSpot hotSpot = new HotSpot(x, y);
+            Integer number = Integer.parseInt(data[2]);
+            HotSpot hotSpot = new HotSpot(x, y, number);
             hotSpots.add(hotSpot);
         }
         return hotSpots;

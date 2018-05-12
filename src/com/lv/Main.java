@@ -7,10 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
 
@@ -36,6 +33,7 @@ public class Main {
             Date date_first = simpleDateFormat.parse(date_string);
             Point point_first = new Point(Double.parseDouble(data_first[6]), Double.parseDouble(data_first[7]),date_first);
             Trajectory trajectory_first  = new Trajectory(hotSpots);
+            trajectory_first.setInitTime(point_first.getDate());
             ArrayList<HotSpot> hotSpots_first = Points.getNearHotSpot(point_first,hotSpots);
             point_first.setBelongedHotSpots(hotSpots_first);
             for (HotSpot hotSpot : hotSpots_first) {
@@ -69,6 +67,7 @@ public class Main {
                     System.out.println("...........");
                     //如果时间大于五分钟，则 建立新的Trajectory，并添加到 Trajectorys 中
                     Trajectory newTrajectory = new Trajectory(hotSpots);
+                    newTrajectory.setInitTime(point.getDate());
                     trajectories.add(newTrajectory);
                     //找到 Point 附近的所有HotSpot
                     ArrayList<HotSpot> hotSpotArrayList = Points.getNearHotSpot(point,hotSpots);
@@ -83,25 +82,33 @@ public class Main {
 
             }
         }
-        Map<HotSpot,Integer> result = new HashMap<>();
 
-        for (HotSpot hotSpot : hotSpots) {
-            result.put(hotSpot,0);
-            int counter = 0;
-            for (Trajectory trajectory : trajectories) {
-                counter += trajectory.getVisitInfo().get(hotSpot);
-            }
-            result.put(hotSpot,counter);
-        }
-
-        File outFile = new File("C:\\E\\dataSet\\2018-05-10\\访问hotSpot的频率\\" + fileName);
+        File outFile = new File("C:\\E\\dataSet\\2018-05-10\\分时间段访问hotSpot的频率\\" + fileName);
         if (!outFile.exists()) {
             outFile.createNewFile();
         }
         FileWriter outFileWriter = new FileWriter(outFile,true);
 
-        for (Map.Entry<HotSpot,Integer> entry : result.entrySet()) {
-            outFileWriter.write(entry.getKey().getX() + "," + entry.getKey().getY() + "," + entry.getValue() + "," + (float)entry.getValue()/times +"\n");
+        for (int i = 0; i < 24; i++) {
+            outFileWriter.write(i + "  ----->>>>  " + (i+1) + "\n");
+            Map<HotSpot,Integer> result = new HashMap<>();
+            for (HotSpot hotSpot : hotSpots) {
+                result.put(hotSpot,0);
+                int counter = 0;
+                for (Trajectory trajectory : trajectories) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(trajectory.getInitTime());
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                    if (hour == i) {
+                        counter += trajectory.getVisitInfo().get(hotSpot);
+                        result.put(hotSpot,counter);
+                    }
+                }
+            }
+            for (Map.Entry<HotSpot,Integer> entry : result.entrySet()) {
+                outFileWriter.write(entry.getKey().getNumber() + "," + entry.getValue() + "," + (float)entry.getValue()/times +"\n");
+            }
+            outFileWriter.flush();
         }
         outFileWriter.close();
     }

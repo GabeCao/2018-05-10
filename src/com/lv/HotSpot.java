@@ -4,9 +4,21 @@ public class HotSpot {
     private double x;
     private double y;
 
-    public HotSpot(double x, double y) {
+    private Integer number;
+
+
+    public HotSpot(double x, double y, Integer number) {
         this.x = x;
         this.y = y;
+        this.number = number;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     @Override
